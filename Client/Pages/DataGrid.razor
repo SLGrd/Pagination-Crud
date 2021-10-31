@@ -1,0 +1,162 @@
+﻿@page "/datagrid"
+
+@using System.Collections.Generic;
+@using System.Net.Http;
+@using System.Net.Http.Headers;
+@using Common.Models;
+@using static Common.GLB;
+
+<TopBanner BannerTxt="Registro de Amigos"> Admin only</TopBanner>
+
+@if ( Amigos.Count == 0 & InitialLoad)
+{
+    <h1> Loading ......</h1>    
+    // Avoids Loading message for empty search results
+    InitialLoad = false;
+}
+else
+{        
+    <div class="container">
+        <div class="row mt-3 mb-2 justify-content-center">
+            <div class="col-12 d-flex flex-row align-items-center justify-content-center m-0 p-0">
+                <h2>Amigos List</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- ADD NEW button-->
+            <div class="col-md-12 d-flex flex-row justify-content-end">
+                <!-- Trigger the modal with a button -->
+                <button class="btn btn-labeled btn-primary  btn-sm mb-1" > Add New </button>
+            </div>
+
+            <!-- Move records to table-->
+            <div class="col-md-12 d-flex flex-row justify-contents-center" style="border-color:green; border-width:thick">
+                <table class="table table-striped table-bordered table-secondary" >
+                    <thead>
+                        <tr>
+                            <th >Id</th>
+                            <th >Name</th>
+                            <th >Address</th>
+                            <th >Email</th>
+                            <th >Phone</th>
+                            <th style="text-align:center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ( AmigoModel a in Amigos)
+                        {
+                            <tr>
+                                <td>@a.RowId</td>
+                                <td>@a.Nome</td>
+                                <td>@a.Address</td>
+                                <td>@a.Email</td>
+                                <td>@a.Phone</td>
+                                <td  style="text-align:center"> 
+                                    <!-- Update and Delete buttons -->
+                                    <button type="button" class="btn btn-labeled btn-primary btn-sm" > Update </button>
+                                    <button type="button" class="btn btn-labeled btn-primary btn-sm" > Delete </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-md-2 d-flex flex-column justify-content-end">
+                <label style="font-size:12px;margin-bottom:0;margin-top:16px">Current page number</label>
+                <input class="form-control InBox" @bind-value=CurrentPageNumber />       
+            </div>         
+            <div class="col-md-2 d-flex flex-column justify-content-end">
+                <label style="font-size:12px;margin-bottom:0;margin-top:16px">Number of Rows Per Page</label>          
+                <input type="number" class="form-control Inbox" @bind-value=RecsPerPage   />
+            </div>
+
+            <div class="col-md-4 d-flex flex-column justify-content-end"></div>
+
+            <div class="col-md-2 d-flex flex-column justify-content-end" @onclick=GetPreviousPage>
+                <button type="button" class="btn btn-labeled btn-primary btn-sm" > Previous </button>   
+            </div>
+            <div class="col-md-2 d-flex flex-column justify-content-end" @onclick=GetNextPage>
+                <button type="button" class="btn btn-labeled btn-primary btn-sm" >   Next   </button>   
+            </div>       
+        
+            <div class="col-md-12 mt-3">
+                <textarea rows="1" style="width:100%"> @Msg </textarea>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    bool InitialLoad = true;
+    int CurrentPageNumber = 1;
+    int RecsPerPage = 5;
+    string Msg = "";
+
+    List<AmigoModel> Amigos = new();
+
+    protected async override Task OnInitializedAsync()
+    {   
+        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);
+        await base.OnInitializedAsync().ConfigureAwait(false);        
+    }
+
+    public async void GetPreviousPage()
+    {
+        if ( CurrentPageNumber > 1) { CurrentPageNumber--;}
+        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);
+        this.StateHasChanged();
+    }
+
+    public async void GetNextPage()
+    {        
+        Amigos = await GetAllAmigosAsync( ++CurrentPageNumber, RecsPerPage);   
+        this.StateHasChanged();
+    }
+
+    private async void RecsPerPageChange()
+    {
+        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);
+        this.StateHasChanged();
+    }
+
+    protected async Task<List<AmigoModel>> GetAllAmigosAsync( int curPageNumber, int recsPerPage)
+    {    
+        List<AmigoModel> amg = new();
+        try
+        {            
+            using ( HttpClient h = new())
+            {
+                h.DefaultRequestHeaders.Clear();
+                h.DefaultRequestHeaders.ConnectionClose = true;
+                //  Define o modo de recebimento dos dados (JSON) . Poderia ser XML por ex;
+                h.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //  Informa o endereço base (parte fixa) da API
+                h.BaseAddress = new Uri( BaseAddress); // Exemplo : https://localhost:44301/
+
+                //  Envia o request (getasync) com o URI universal resource identifier
+                using (HttpResponseMessage m = await h.GetAsync($"api/Amigos/Gumbo/{curPageNumber}&{recsPerPage}"))
+                {
+                    if (m.IsSuccessStatusCode)
+                    {
+                        //  Recebe a resposta com os dados requisitados e converte no Amigos Model
+                        var dados = await m.Content.ReadAsStringAsync();
+                        amg = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AmigoModel>>(dados);
+                            
+                        Msg = (amg.Count == 0) ? "Status " + $"{m.StatusCode} - " +"No records found"  
+                                               : "Status " + $"{m.StatusCode} - {amg.Count} record(s) to show";
+                    }
+                    else
+                        Msg = "Status " + $"{m.StatusCode} - " + m.ReasonPhrase;                        
+                }
+            }
+        }
+        catch (Exception ex) { Msg = ex.Message; }  
+
+        //  Send result back
+        return amg;
+    }
+}

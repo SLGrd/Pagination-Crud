@@ -1,0 +1,2 @@
+D:\Tutorials\Paging\ApiAmigos\bin
+D:\Tutorials\Paging\ApiAmigos\obj
