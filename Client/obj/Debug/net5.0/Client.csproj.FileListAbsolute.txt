@@ -57,3 +57,5 @@ D:\Tutorials\Paging\Client\obj\Debug\net5.0\Razor\Pages\DataGrid.razor.g.cs
 D:\Tutorials\Paging\Client\bin\Debug\net5.0\Common.dll
 D:\Tutorials\Paging\Client\bin\Debug\net5.0\Common.pdb
 D:\Tutorials\Paging\Client\bin\Debug\net5.0\Newtonsoft.Json.dll
+D:\Tutorials\Paging\Client\obj\Debug\net5.0\RazorDeclaration\Shared\RegisterForm.razor.g.cs
+D:\Tutorials\Paging\Client\obj\Debug\net5.0\Razor\Shared\RegisterForm.razor.g.cs

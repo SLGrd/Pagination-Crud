@@ -1,16 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
+@using System.Drawing;
+
+<!-- Veja mais sobre layout e componentes nos links abaixo -->
+<!-- https://youtu.be/dv3okjKcrRM : BLAZOR - Exemplo de uma aplicacao para manutencao de um cadastro de pessoas - CRUD Parte 2 -->
+<!-- https://www.w3schools.com/html/html_layout.asp : w3 school html layout -->
+
 <div class="page">
-    <!-- Sidebar Nenu -->
+    <!-- Sidebar Menu -->
     <div class="sidebar">        
         <NavMenu />
     </div>
 
     <!-- Single Page Area -->
-    <div class="container-fluid m-0 p-0">
-        <div class="container-fluid m-0 p-0 vh-100" style="border-style:double;border-color:black">
+    @*//<div class="container-fluid m-0 p-0">*@
+        <div class="container-fluid m-0 p-0 vh-100" style="background-color:@CorDeFundo; color:@CorDoTexto; border-style:double;border-color:white">
             <!-- Single page application -->
-           @Body
+            @*<h5>Aqui entra o codigo html das paginas que chamamos ------------------------------------</h5>*@
+            @Body
         </div>
-    </div>
+    @*//</div>*@
 </div>
+
+@code{
+    string CorDeFundo = "black";
+    string CorDoTexto = "red";
+}

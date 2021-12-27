@@ -1,5 +1,9 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">Client</a>
+﻿<div class="top-row navbar navbar-dark m-0 p-0">
+    <div class="container m-0 p-0">
+        <span class="navbar-brand d-flex flex-row align-items-center justify-content-center m-0 pt-2" style="color: white;"> 
+            <h3>Cliente </h3>
+        </span>
+    </div>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -19,6 +23,14 @@
         </li>
     </ul>
 </div>
+
+<style>
+    .navbar-brand{       
+        width:100%;
+        background-color: Black;
+        border-radius: 20px;
+    }
+</style>
 
 @code {
     private bool collapseNavMenu = true;

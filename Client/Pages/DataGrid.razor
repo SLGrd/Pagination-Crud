@@ -1,46 +1,39 @@
 ﻿@page "/datagrid"
 
-@using System.Collections.Generic;
-@using System.Net.Http;
-@using System.Net.Http.Headers;
-@using Common.Models;
-@using static Common.GLB;
+<TopBanner BannerTxt="Registro de Amigos"> Admin only</TopBanner>  <!-- https://youtu.be/IGzDf3dSSAQ : Blazor Técnicas e Truques P2 : Componentes & Modal -->
 
-<TopBanner BannerTxt="Registro de Amigos"> Admin only</TopBanner>
-
-@if ( Amigos.Count == 0 & InitialLoad)
+@if ( InitialLoad)
 {
-    <h1> Loading ......</h1>    
-    // Avoids Loading message for empty search results
-    InitialLoad = false;
+    <h1> Loading ......</h1>       
 }
 else
 {        
-    <div class="container">
-        <div class="row mt-3 mb-2 justify-content-center">
-            <div class="col-12 d-flex flex-row align-items-center justify-content-center m-0 p-0">
-                <h2>Amigos List</h2>
-            </div>
+    <div class="container" >    
+        <div class="row" >            
+            <div class="col-12 d-flex flex-column align-items-center justify-content-center m-0 p-0 mt-2" >
+                <h2>Amigos List</h2>                   
+            </div>                 
         </div>
 
         <div class="row">
             <!-- ADD NEW button-->
-            <div class="col-md-12 d-flex flex-row justify-content-end">
-                <!-- Trigger the modal with a button -->
-                <button class="btn btn-labeled btn-primary  btn-sm mb-1" > Add New </button>
+            <div class="col-12 d-flex flex-row justify-content-end" >
+                <!-- Para uso futuro - Trigger the modal with a button -->
+                <button type="button" class="btn btn-labeled btn-danger btn-sm mb-1"    
+                             data-bs-toggle="modal" data-bs-target="#myModal"  @onclick="AddNew" > Add New </button>
             </div>
 
             <!-- Move records to table-->
-            <div class="col-md-12 d-flex flex-row justify-contents-center" style="border-color:green; border-width:thick">
-                <table class="table table-striped table-bordered table-secondary" >
+            <div class="col-12 d-flex flex-row justify-contents-center" >
+                <table class="table table-striped table-bordered table-secondary table-hover" >
                     <thead>
                         <tr>
-                            <th >Id</th>
-                            <th >Name</th>
-                            <th >Address</th>
-                            <th >Email</th>
-                            <th >Phone</th>
-                            <th style="text-align:center">Action</th>
+                                <th >Id</th>
+                                <th >Name</th>
+                                <th >Address</th>
+                                <th >Email</th>
+                                <th >Phone</th>
+                                <th style="text-align:center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,9 +46,11 @@ else
                                 <td>@a.Email</td>
                                 <td>@a.Phone</td>
                                 <td  style="text-align:center"> 
-                                    <!-- Update and Delete buttons -->
-                                    <button type="button" class="btn btn-labeled btn-primary btn-sm" > Update </button>
-                                    <button type="button" class="btn btn-labeled btn-primary btn-sm" > Delete </button>
+                                    <!-- Para uso futuro - Update and Delete buttons -->
+                                    <button type="button" class="btn btn-labeled btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#myModal " 
+                                            @onclick="(() => Update( a))"> Update </button>
+                                    <button type="button" class="btn btn-labeled btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#myModal " 
+                                            @onclick="(() => Delete( a))"> Delete </button>
                                 </td>
                             </tr>
                         }
@@ -64,44 +59,75 @@ else
             </div>
         </div>
 
-         <div class="row">
-            <div class="col-md-2 d-flex flex-column justify-content-end">
+        <div class="row">
+            <div class="col-2 d-flex flex-column justify-content-end">
                 <label style="font-size:12px;margin-bottom:0;margin-top:16px">Current page number</label>
-                <input class="form-control InBox" @bind-value=CurrentPageNumber />       
-            </div>         
-            <div class="col-md-2 d-flex flex-column justify-content-end">
+                <input class="form-control" @bind-value=CurrentPageNumber />       
+            </div>       
+                
+            <div class="col-2 d-flex flex-column justify-content-end">
                 <label style="font-size:12px;margin-bottom:0;margin-top:16px">Number of Rows Per Page</label>          
-                <input type="number" class="form-control Inbox" @bind-value=RecsPerPage   />
+                <input type="number" class="form-control" @bind-value=RecsPerPage />
             </div>
 
-            <div class="col-md-4 d-flex flex-column justify-content-end"></div>
+            <div class="col-4 d-flex flex-column justify-content-end"></div>
 
-            <div class="col-md-2 d-flex flex-column justify-content-end" @onclick=GetPreviousPage>
+            <div class="col-2 d-flex flex-column justify-content-end" @onclick=GetPreviousPage>
                 <button type="button" class="btn btn-labeled btn-primary btn-sm" > Previous </button>   
             </div>
-            <div class="col-md-2 d-flex flex-column justify-content-end" @onclick=GetNextPage>
+            <div class="col-2 d-flex flex-column justify-content-end" @onclick=GetNextPage>
                 <button type="button" class="btn btn-labeled btn-primary btn-sm" >   Next   </button>   
             </div>       
-        
-            <div class="col-md-12 mt-3">
+                
+            <div class="col-12 mt-3">
                 <textarea rows="1" style="width:100%"> @Msg </textarea>
             </div>
         </div>
     </div>
 }
+<!-- =============================================  DOCUMENTAÇÂO <<<<<<<<<<<< ============================== -->
+<!-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> https://getbootstrap.com/docs/5.0/components/modal/ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-->
+<!-- Modal -->
+<div id="myModal" class="modal fade"  style="background-color:transparent">
+    <!-- Qdo vc tiver um tempo teste estas variaveis de estilo => style="backdrop-filter:brightness(1) grayscale(0.3) blur(2)"-->
+    <div class="modal-dialog modal-md modal-dialog-centered" style="background-color:transparent;">
+        <!-- Modal content-->
+        <div class="modal-content" style="background-color:transparent">
+            <div class="modal-body my-0 p-0">
+                <RegisterForm   amg="@amg" FormAction="@Action" Refresh="@Refresh"/>                                        
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .triangle{
+        width: 0;
+        height : 4vh;
+        border-left: 20vw solid grey;
+        border-top: 2vh solid transparent;
+        border-bottom: 2vh solid transparent;
+        border-right: 20vw solid  grey;
+    }
+</style>
 
 @code {
     bool InitialLoad = true;
     int CurrentPageNumber = 1;
     int RecsPerPage = 5;
-    string Msg = "";
+    string Msg = "teste de conteudo";
 
+    private string Action;
+    private AmigoModel amg = new();
     List<AmigoModel> Amigos = new();
 
     protected async override Task OnInitializedAsync()
-    {   
-        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);
-        await base.OnInitializedAsync().ConfigureAwait(false);        
+    {
+        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);  
+        
+        await base.OnInitializedAsync().ConfigureAwait(false);
+        // Avoids Loading message for empty search results 
+        InitialLoad = false;
     }
 
     public async void GetPreviousPage()
@@ -117,10 +143,28 @@ else
         this.StateHasChanged();
     }
 
-    private async void RecsPerPageChange()
-    {
-        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);
+    public async void RefreshCurrentPage()
+    {        
+        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);   
         this.StateHasChanged();
+    }
+
+    public void AddNew()
+    {
+        amg = new AmigoModel();
+        Action = "A";
+    }
+
+    public void Update( AmigoModel a)
+    {
+        amg = a;
+        Action = "U";
+    }
+
+    public void Delete( AmigoModel a)
+    {
+        amg = a;       
+        Action = "D";
     }
 
     protected async Task<List<AmigoModel>> GetAllAmigosAsync( int curPageNumber, int recsPerPage)
@@ -132,10 +176,11 @@ else
             {
                 h.DefaultRequestHeaders.Clear();
                 h.DefaultRequestHeaders.ConnectionClose = true;
-                //  Define o modo de recebimento dos dados (JSON) . Poderia ser XML por ex;
+                //  Define o modo de recebimento dos dados (JSON) . Poderia ser XML por ex;;
+                //  Aqui tem um bom tutorial de JSON : https://www.tutorialspoint.com/json/json_quick_guide.htm
                 h.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 //  Informa o endereço base (parte fixa) da API
-                h.BaseAddress = new Uri( BaseAddress); // Exemplo : https://localhost:44301/
+                h.BaseAddress =  new Uri(  BaseAddress); // Exemplo : https://localhost:44301/
 
                 //  Envia o request (getasync) com o URI universal resource identifier
                 using (HttpResponseMessage m = await h.GetAsync($"api/Amigos/Gumbo/{curPageNumber}&{recsPerPage}"))
@@ -144,19 +189,27 @@ else
                     {
                         //  Recebe a resposta com os dados requisitados e converte no Amigos Model
                         var dados = await m.Content.ReadAsStringAsync();
-                        amg = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AmigoModel>>(dados);
+                        amg = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AmigoModel>>(dados);                       
                             
                         Msg = (amg.Count == 0) ? "Status " + $"{m.StatusCode} - " +"No records found"  
                                                : "Status " + $"{m.StatusCode} - {amg.Count} record(s) to show";
                     }
                     else
-                        Msg = "Status " + $"{m.StatusCode} - " + m.ReasonPhrase;                        
+                        Msg = "Status " + $"{m.StatusCode} - " + m.ReasonPhrase + BaseAddress;                        
                 }
             }
         }
-        catch (Exception ex) { Msg = ex.Message; }  
-
+        catch (Exception ex) 
+        {       
+            Msg = ex.Message + BaseAddress; 
+        }  
         //  Send result back
         return amg;
+    }
+
+    public void Refresh()
+    {
+        RefreshCurrentPage( );   
+        this.StateHasChanged();
     }
 }

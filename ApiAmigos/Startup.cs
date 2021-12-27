@@ -8,52 +8,54 @@ using Microsoft.OpenApi.Models;
 
 namespace ApiAmigos
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
+        public class Startup
         {
-            Configuration = configuration;
-        }
+                public Startup(IConfiguration configuration)
+                {
+                        Configuration = configuration;
+                        //      Get conection string from JSON settings files
+                        Common.GLB.CnnString = Configuration.GetValue<string>("ConnectionStrings:DB");
+                }
 
-        public IConfiguration Configuration { get; }
+                public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // *** Codigo escrito pelo desenvolvedor *** --------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<
+                // This method gets called by the runtime. Use this method to add services to the container.
+                public void ConfigureServices(IServiceCollection services)
+                {
+                        // *** Codigo escrito pelo desenvolvedor *** --------------------------<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-            // Relaciona uma Interface com o Repositorio que a implementa 
-            services.AddScoped<Interfaces.IAmigoRepositories<AmigoModel>, Repositories.AmigoRepositoryList>();
+                        // Relaciona uma Interface com o Repositorio que a implementa 
+                        services.AddScoped<Interfaces.IAmigoRepositories<AmigoModel>, Repositories.AmigoRepositorySql>();
 
-            // *** Fim do codigo escrito pelodesenvolvedor *** --------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                        // *** Fim do codigo escrito pelodesenvolvedor *** --------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApiAmigos", Version = "v1" });
-            });
-        }
+                        services.AddControllers();
+                        services.AddSwaggerGen(c =>
+                        {
+                                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApiAmigos", Version = "v1" });
+                        });
+                }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Amigos v1"));
-            }
+                // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+                public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+                {
+                        if (env.IsDevelopment())
+                        {
+                                app.UseDeveloperExceptionPage();
+                                app.UseSwagger();
+                                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Amigos v1"));
+                        }
 
-            app.UseHttpsRedirection();
+                        app.UseHttpsRedirection();
 
-            app.UseRouting();
+                        app.UseRouting();
 
-            app.UseAuthorization();
+                        app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
-    }
+                        app.UseEndpoints(endpoints =>
+                        {
+                        endpoints.MapControllers();
+                        });
+                }
+         }
 }

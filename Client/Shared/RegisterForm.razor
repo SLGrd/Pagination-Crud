@@ -1,0 +1,207 @@
+﻿@using System.Text.Encodings;
+
+<!-- Edit form definition -->
+<EditForm Model="@amg" OnValidSubmit="ValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="card BordaRelevo">
+        <!-- Card Header -->
+        <div class="card-header d-flex justify-content-center mt-2" style="background-color:lightgrey ; border:solid 1px; border-radius:3px;">
+		<h4 class="m-2 ">Amigos</h4>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body mt-1 p-3" style="background-color:lightgrey ; border: solid 1px; border-radius:3px;">	
+            <label style="font-size:12px; color:blue; margin-bottom:0; ">Name</label>
+            <InputText class="form-control InBox" type="text"  @bind-Value="amg.Nome"/>
+            <ValidationMessage style="font-size:11px; color:red"  For="(() => amg.Nome)"/>
+
+            <label style="font-size:12px; color:blue; margin-bottom:0; margin-top:16px">Address</label>
+            <InputText class="form-control InBox" type="text"  @bind-Value="amg.Address"/>
+            <ValidationMessage style="font-size:11px;color:red" For="(() => amg.Address)" />
+
+            <label style="font-size:12px; color:blue; margin-bottom:0; margin-top:16px">Phone</label>
+            <InputText class="form-control InBox" type="text"  @bind-Value="amg.Phone"/>
+            <ValidationMessage style="font-size:11px;color:red" For="(() => amg.Phone)" />
+
+            <label style="font-size:12px; color:blue; margin-bottom:1px; margin-top:16px">Email</label>
+            <InputText  class="form-control InBox" type="text" @bind-Value="amg.Email"/>
+            <ValidationMessage style="font-size:11px;color:red" For="(() => amg.Email)" />
+        </div>
+
+        <!-- Card Footer -->
+        <div class="card-footer d-flex flex-row justify-content-end mt-4 mb-0 p-0" style="background-color:gainsboro; border:none;">                        
+            @if ( ShowButton)
+            {
+                <button class="btn btn-outline-primary mx-4" type="button" data-bs-dismiss="modal" >Cancel</button>
+
+                @if (FormAction == "A")
+                        {       <button class="btn btn-outline-primary" type="submit" >ADD NEW</button>   }                     
+                @if ( FormAction == "U")
+                        {       <button class="btn btn-outline-primary" type="submit">UPDATE</button>  }
+                @if ( FormAction == "D")
+                        {       <button class="btn btn-danger" type="button" data-bs-dismiss="modal" @onclick="(() => Delete( amg.RowId))">DELETE</button>  }
+
+            } else  {                                           
+                <InputText  class="form-control" style="border:none" type="text" @bind-Value="@Msg"/>
+                <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal"  @onclick="(() => Close())" >CLOSE</button>
+            }
+        </div>
+    </div>
+</EditForm>
+
+<style>
+    .BordaRelevo {
+        max-width: auto;
+        padding: 34px;
+        background-color: gainsboro;
+        box-shadow: 2px 10px 8px #101010;
+        border-radius: 9px;
+        border-color: black;
+        border-style: double;
+        margin: 5px 10px 20px 30px;
+    }
+
+    .InBox {
+        background-color: gainsboro;
+        border-radius: 5px;
+        border-color: gray;
+        border-style: solid;
+        border-top: none;
+        border-right: none;
+    }
+</style>
+
+@code{
+    [Parameter]
+    public AmigoModel amg { get; set; }
+    [Parameter]
+    public string FormAction { get; set; }
+    [Parameter]
+    public EventCallback Refresh { get; set; }
+
+    public bool ShowButton = true;
+    public string Msg = "Status messages";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();               
+    }
+
+    public async void ValidSubmit()
+    {
+        if (FormAction.Equals("A")) 
+        {
+            await CreateAmigosAsync(amg);
+            await CallBackRoutine();
+            ShowButton = false;
+        }     
+                
+        if (FormAction.Equals("U")) 
+        {
+            await UpdateAmigosAsync(amg);
+            await CallBackRoutine();
+            ShowButton = false;
+        }    
+    }
+
+    private async Task<string> CreateAmigosAsync( AmigoModel amg)
+    {      
+        try
+        {            
+            using ( HttpClient h = new())
+            {
+                h.DefaultRequestHeaders.ConnectionClose = true;
+                //      Informa o endereço base (parte fixa) da API. Exemplo : https://localhost:44301/
+                h.BaseAddress = new Uri( BaseAddress);
+                //       Serialize object to be sent on Request body                               
+                var content =  new StringContent( JsonConvert.SerializeObject( amg), System.Text.Encoding.UTF8, "application/json");
+
+                //  Envia o request (getasync) com o URI universal resource identifier
+                using (HttpResponseMessage m = await h.PostAsync($"api/Amigos/Create", content))
+                {
+                    if (m.IsSuccessStatusCode)
+                    {
+                        //  Recebe a resposta com os dados requisitados e converte no Amigos Model   
+                        var dados = await m.Content.ReadAsStringAsync();
+                        amg = JsonConvert.DeserializeObject<AmigoModel>(dados);
+                        Msg = "Status " + $"{m.StatusCode} - " + "Record inserted at Row #" + amg.RowId;                                                                     
+                    }
+                    else
+                        Msg = "Status " + $"{m.StatusCode} - " + m.ReasonPhrase;                        
+                }
+            }
+        }
+        catch (Exception ex) { Msg = ex.Message; }
+
+        return Msg;
+    }
+
+    private async Task<string> UpdateAmigosAsync( AmigoModel amg)
+    {      
+        try
+        {            
+            using ( HttpClient h = new())
+            {
+                h.DefaultRequestHeaders.ConnectionClose = true;
+                //  Informa o endereço base (parte fixa) da API. Exemplo : https://localhost:44301/
+                h.BaseAddress = new Uri( BaseAddress);
+                //  Serialize object to be sent on Request body                
+                var content =  new StringContent( JsonConvert.SerializeObject( amg), System.Text.Encoding.UTF8, "application/json");
+
+                //  Envia o request (getasync) com o URI universal resource identifier
+                using (HttpResponseMessage m = await h.PutAsync($"api/Amigos/Update", content))
+                {
+                    if (m.IsSuccessStatusCode)
+                    {
+                        //  Recebe a resposta com os dados requisitados e converte no Amigos Model   
+                        var dados = await m.Content.ReadAsStringAsync();
+                        amg = JsonConvert.DeserializeObject<AmigoModel>(dados);
+                        Msg = "Status " + $"{m.StatusCode} - " + "Record updated at Row #" + amg.RowId;
+                    }
+                    else
+                    {
+                        var erros = await m.Content.ReadAsStringAsync();
+                        Msg = "Status " + $"{m.StatusCode} - " + erros;
+                    }
+                }
+            }
+        }
+        catch (Exception ex) { Msg = ex.Message; }
+        return Msg;
+    }
+
+    public async void Delete( int rowId)
+    {
+        try
+        {            
+            using ( HttpClient h = new())
+            {
+                h.DefaultRequestHeaders.ConnectionClose = true;
+                //  Envia o request (getasync) com o URI universal resource identifier
+                using (HttpResponseMessage m = await h.DeleteAsync( BaseAddress + $"/api/Amigos/Delete/{rowId}"))
+                {
+                    if (m.IsSuccessStatusCode)
+                    {
+                        Msg = "Status " + $"{m.StatusCode} - " + "Record inserted at Row #" + amg.RowId;                                                                     
+                    }
+                    else
+                        Msg = "Status " + $"{m.StatusCode} - " + m.ReasonPhrase;
+                }
+            }
+        }
+        catch (Exception ex) { Msg = ex.Message; }
+
+        await CallBackRoutine();
+    }
+
+    private void Close()
+    {               
+        ShowButton = true;
+    }
+
+    public async Task CallBackRoutine()
+    {
+        await Refresh.InvokeAsync();
+    }
+}

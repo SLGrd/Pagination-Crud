@@ -111,6 +111,93 @@
         }
       },
       {
+        "HashCode": 874113656,
+        "Kind": "Components.Component",
+        "Name": "Client.Shared.RegisterForm",
+        "AssemblyName": "Client",
+        "CaseSensitive": true,
+        "TagMatchingRules": [
+          {
+            "TagName": "RegisterForm"
+          }
+        ],
+        "BoundAttributes": [
+          {
+            "Kind": "Components.Component",
+            "Name": "amg",
+            "TypeName": "Common.Models.AmigoModel",
+            "Metadata": {
+              "Common.PropertyName": "amg"
+            }
+          },
+          {
+            "Kind": "Components.Component",
+            "Name": "FormAction",
+            "TypeName": "System.String",
+            "Metadata": {
+              "Common.PropertyName": "FormAction"
+            }
+          },
+          {
+            "Kind": "Components.Component",
+            "Name": "Refresh",
+            "TypeName": "Microsoft.AspNetCore.Components.EventCallback",
+            "Metadata": {
+              "Common.PropertyName": "Refresh",
+              "Components.EventCallback": "True"
+            }
+          }
+        ],
+        "Metadata": {
+          "Runtime.Name": "Components.IComponent",
+          "Common.TypeName": "Client.Shared.RegisterForm"
+        }
+      },
+      {
+        "HashCode": -555700824,
+        "Kind": "Components.Component",
+        "Name": "Client.Shared.RegisterForm",
+        "AssemblyName": "Client",
+        "CaseSensitive": true,
+        "TagMatchingRules": [
+          {
+            "TagName": "Client.Shared.RegisterForm"
+          }
+        ],
+        "BoundAttributes": [
+          {
+            "Kind": "Components.Component",
+            "Name": "amg",
+            "TypeName": "Common.Models.AmigoModel",
+            "Metadata": {
+              "Common.PropertyName": "amg"
+            }
+          },
+          {
+            "Kind": "Components.Component",
+            "Name": "FormAction",
+            "TypeName": "System.String",
+            "Metadata": {
+              "Common.PropertyName": "FormAction"
+            }
+          },
+          {
+            "Kind": "Components.Component",
+            "Name": "Refresh",
+            "TypeName": "Microsoft.AspNetCore.Components.EventCallback",
+            "Metadata": {
+              "Common.PropertyName": "Refresh",
+              "Components.EventCallback": "True"
+            }
+          }
+        ],
+        "Metadata": {
+          "Runtime.Name": "Components.IComponent",
+          "Common.TypeName": "Client.Shared.RegisterForm",
+          "Components.NameMatch": "Components.FullyQualifiedNameMatch"
+        }
+      },
+      {
         "HashCode": 1934639073,
         "Kind": "Components.Component",
         "Name": "Client.Shared.TopBanner",
@@ -15987,6 +16074,11 @@
     {
       "FilePath": "d:\\Tutorials\\Paging\\Client\\Shared\\TopBanner.razor",
       "TargetPath": "Shared\\TopBanner.razor",
+      "FileKind": "component"
+    },
+    {
+      "FilePath": "d:\\Tutorials\\Paging\\Client\\Shared\\RegisterForm.razor",
+      "TargetPath": "Shared\\RegisterForm.razor",
       "FileKind": "component"
     },
     {

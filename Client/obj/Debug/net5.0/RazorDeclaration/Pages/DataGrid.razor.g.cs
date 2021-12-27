@@ -8,103 +8,111 @@ namespace Client.Pages
 {
     #line hidden
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
-#line 2 "D:\Tutorials\Paging\Client\_Imports.razor"
-using Microsoft.AspNetCore.Authorization;
+#line 1 "D:\Tutorials\Paging\Client\_Imports.razor"
+using System.Threading;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 3 "D:\Tutorials\Paging\Client\_Imports.razor"
-using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 4 "D:\Tutorials\Paging\Client\_Imports.razor"
-using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Authorization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 5 "D:\Tutorials\Paging\Client\_Imports.razor"
-using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Components.Forms;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 6 "D:\Tutorials\Paging\Client\_Imports.razor"
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Routing;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 7 "D:\Tutorials\Paging\Client\_Imports.razor"
-using Microsoft.AspNetCore.Components.Web.Virtualization;
+using Microsoft.AspNetCore.Components.Web;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 8 "D:\Tutorials\Paging\Client\_Imports.razor"
+using Microsoft.AspNetCore.Components.Web.Virtualization;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 9 "D:\Tutorials\Paging\Client\_Imports.razor"
 using Microsoft.JSInterop;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 10 "D:\Tutorials\Paging\Client\_Imports.razor"
-using Client;
-
-#line default
-#line hidden
-#nullable disable
-#nullable restore
 #line 11 "D:\Tutorials\Paging\Client\_Imports.razor"
-using Client.Shared;
-
-#line default
-#line hidden
-#nullable disable
-#nullable restore
-#line 3 "D:\Tutorials\Paging\Client\Pages\DataGrid.razor"
-using System.Collections.Generic;
-
-#line default
-#line hidden
-#nullable disable
-#nullable restore
-#line 4 "D:\Tutorials\Paging\Client\Pages\DataGrid.razor"
 using System.Net.Http;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 5 "D:\Tutorials\Paging\Client\Pages\DataGrid.razor"
+#line 12 "D:\Tutorials\Paging\Client\_Imports.razor"
 using System.Net.Http.Headers;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 6 "D:\Tutorials\Paging\Client\Pages\DataGrid.razor"
+#line 14 "D:\Tutorials\Paging\Client\_Imports.razor"
+using Client;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 15 "D:\Tutorials\Paging\Client\_Imports.razor"
+using Client.Shared;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 17 "D:\Tutorials\Paging\Client\_Imports.razor"
 using Common.Models;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 7 "D:\Tutorials\Paging\Client\Pages\DataGrid.razor"
+#line 18 "D:\Tutorials\Paging\Client\_Imports.razor"
 using static Common.GLB;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 20 "D:\Tutorials\Paging\Client\_Imports.razor"
+using Newtonsoft.Json;
 
 #line default
 #line hidden
@@ -118,19 +126,24 @@ using static Common.GLB;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 93 "D:\Tutorials\Paging\Client\Pages\DataGrid.razor"
+#line 114 "D:\Tutorials\Paging\Client\Pages\DataGrid.razor"
        
     bool InitialLoad = true;
     int CurrentPageNumber = 1;
     int RecsPerPage = 5;
-    string Msg = "";
+    string Msg = "teste de conteudo";
 
+    private string Action;
+    private AmigoModel amg = new();
     List<AmigoModel> Amigos = new();
 
     protected async override Task OnInitializedAsync()
-    {   
-        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);
-        await base.OnInitializedAsync().ConfigureAwait(false);        
+    {
+        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);  
+        
+        await base.OnInitializedAsync().ConfigureAwait(false);
+        // Avoids Loading message for empty search results 
+        InitialLoad = false;
     }
 
     public async void GetPreviousPage()
@@ -146,10 +159,28 @@ using static Common.GLB;
         this.StateHasChanged();
     }
 
-    private async void RecsPerPageChange()
-    {
-        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);
+    public async void RefreshCurrentPage()
+    {        
+        Amigos = await GetAllAmigosAsync( CurrentPageNumber, RecsPerPage);   
         this.StateHasChanged();
+    }
+
+    public void AddNew()
+    {
+        amg = new AmigoModel();
+        Action = "A";
+    }
+
+    public void Update( AmigoModel a)
+    {
+        amg = a;
+        Action = "U";
+    }
+
+    public void Delete( AmigoModel a)
+    {
+        amg = a;       
+        Action = "D";
     }
 
     protected async Task<List<AmigoModel>> GetAllAmigosAsync( int curPageNumber, int recsPerPage)
@@ -161,10 +192,11 @@ using static Common.GLB;
             {
                 h.DefaultRequestHeaders.Clear();
                 h.DefaultRequestHeaders.ConnectionClose = true;
-                //  Define o modo de recebimento dos dados (JSON) . Poderia ser XML por ex;
+                //  Define o modo de recebimento dos dados (JSON) . Poderia ser XML por ex;;
+                //  Aqui tem um bom tutorial de JSON : https://www.tutorialspoint.com/json/json_quick_guide.htm
                 h.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 //  Informa o endereço base (parte fixa) da API
-                h.BaseAddress = new Uri( BaseAddress); // Exemplo : https://localhost:44301/
+                h.BaseAddress =  new Uri(  BaseAddress); // Exemplo : https://localhost:44301/
 
                 //  Envia o request (getasync) com o URI universal resource identifier
                 using (HttpResponseMessage m = await h.GetAsync($"api/Amigos/Gumbo/{curPageNumber}&{recsPerPage}"))
@@ -173,20 +205,28 @@ using static Common.GLB;
                     {
                         //  Recebe a resposta com os dados requisitados e converte no Amigos Model
                         var dados = await m.Content.ReadAsStringAsync();
-                        amg = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AmigoModel>>(dados);
+                        amg = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AmigoModel>>(dados);                       
                             
                         Msg = (amg.Count == 0) ? "Status " + $"{m.StatusCode} - " +"No records found"  
                                                : "Status " + $"{m.StatusCode} - {amg.Count} record(s) to show";
                     }
                     else
-                        Msg = "Status " + $"{m.StatusCode} - " + m.ReasonPhrase;                        
+                        Msg = "Status " + $"{m.StatusCode} - " + m.ReasonPhrase + BaseAddress;                        
                 }
             }
         }
-        catch (Exception ex) { Msg = ex.Message; }  
-
+        catch (Exception ex) 
+        {       
+            Msg = ex.Message + BaseAddress; 
+        }  
         //  Send result back
         return amg;
+    }
+
+    public void Refresh()
+    {
+        RefreshCurrentPage( );   
+        this.StateHasChanged();
     }
 
 #line default

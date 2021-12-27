@@ -1,0 +1,12 @@
+D:\Tutorials\Paging\Common\bin\Release\net5.0\Common.deps.json
+D:\Tutorials\Paging\Common\bin\Release\net5.0\Common.dll
+D:\Tutorials\Paging\Common\bin\Release\net5.0\ref\Common.dll
+D:\Tutorials\Paging\Common\bin\Release\net5.0\Common.pdb
+D:\Tutorials\Paging\Common\obj\Release\net5.0\Common.GeneratedMSBuildEditorConfig.editorconfig
+D:\Tutorials\Paging\Common\obj\Release\net5.0\Common.AssemblyInfoInputs.cache
+D:\Tutorials\Paging\Common\obj\Release\net5.0\Common.AssemblyInfo.cs
+D:\Tutorials\Paging\Common\obj\Release\net5.0\Common.csproj.CoreCompileInputs.cache
+D:\Tutorials\Paging\Common\obj\Release\net5.0\Common.dll
+D:\Tutorials\Paging\Common\obj\Release\net5.0\ref\Common.dll
+D:\Tutorials\Paging\Common\obj\Release\net5.0\Common.pdb
+D:\Tutorials\Paging\Common\obj\Release\net5.0\Common.csproj.AssemblyReference.cache
